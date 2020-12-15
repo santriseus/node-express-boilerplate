@@ -1,0 +1,7 @@
+{
+  "all": true,
+  "check-coverage": true,
+  "exclude": ["src/server.js", "src/lambda.js", "**/**-test.js"],
+  "include": ["src/**"],
+  "reporter": ["text", "html"]
+}

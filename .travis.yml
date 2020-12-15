@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - '12'
+branches:
+  only:
+    - main
+env:
+  global:
+    - NODE_ENV=test
+cache:
+  directories:
+    - "node_modules"
+script:
+  - npm run lint
+  - npm run unit-tests
+after_success: npm run coverage
