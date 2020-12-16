@@ -9,12 +9,12 @@ module.exports = function newUrlRepository({dependencies, options}) {
           PK: code,
           url: longUrl,
           createdAt: new Date().toISOString(),
-          ConditionExpression: 'attribute_not_exists(PK)',
         },
+        ConditionExpression: 'attribute_not_exists(PK)',
       }).promise();
     },
     getNextCount: async function getNextCount() {
-      const response = await dynamoDBDocumentClient.update({
+      return dynamoDBDocumentClient.update({
         TableName: tableName,
         Key: {
           PK: '__id',
@@ -24,8 +24,32 @@ module.exports = function newUrlRepository({dependencies, options}) {
           ':val': 1,
         },
         ReturnValues: 'UPDATED_NEW',
-      }).promise();
-      return response.Attributes.currentValue;
+      }).promise().then((response) => response.Attributes.currentValue).catch(async (err) =>{
+        if (err.code === 'ValidationException') {
+          await dynamoDBDocumentClient.put({
+            TableName: tableName,
+            Item: {
+              PK: '__id',
+              currentValue: 0,
+            },
+            ConditionExpression: 'attribute_not_exists(PK)',
+          }).promise();
+
+          return dynamoDBDocumentClient.update({
+            TableName: tableName,
+            Key: {
+              PK: '__id',
+            },
+            UpdateExpression: 'set currentValue = currentValue + :val',
+            ExpressionAttributeValues: {
+              ':val': 1,
+            },
+            ReturnValues: 'UPDATED_NEW',
+          }).promise().then((response) => response.Attributes.currentValue);
+        } else {
+          throw err;
+        }
+      });
     },
     getUrl: async function getUrl(code) {
       const response = await dynamoDBDocumentClient.get({

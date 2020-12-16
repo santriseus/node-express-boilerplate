@@ -1,4 +1,5 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
+require("chai").use(require("chai-as-promised"));
 module.exports = {
   'exit': true,
   'bail': true,

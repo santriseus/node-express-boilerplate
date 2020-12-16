@@ -37,6 +37,14 @@ module.exports = function newDataHelper({dependencies, options}) {
         },
       }).promise();
     },
+    deleteCounter: async function(name) {
+      return dependencies.aws.dynamoDBDocumentClient.delete({
+        TableName: name,
+        Key: {
+          PK: '__id',
+        },
+      }).promise();
+    },
     addUrl: async function(name, data) {
       return dependencies.aws.dynamoDBDocumentClient.put({
         TableName: name,

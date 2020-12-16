@@ -1,4 +1,5 @@
 const sinon = require('sinon');
+const errors = require('./../errors');
 const validation = require('./../utilities/validation')({
   dependencies: {
     Joi: require('joi'),
@@ -11,7 +12,7 @@ const newUrlService = require('./url-service');
 const dependencies = {
   validation,
   urlEncoder,
-  errors: require('./../errors'),
+  errors,
 };
 
 describe('Url Service', () => {
@@ -60,12 +61,7 @@ describe('Url Service', () => {
       },
       options: {urlPath: 'http://localhost:8000/'},
     });
-    await urlService.getLongUrl({code: '45gDs'})
-        .then(() =>{
-          throw new Error('Promise should reject');
-        }).catch((err)=>{
-          expect(err.name).to.equal('UrlNotFoundError');
-        });
+    await expect(urlService.getLongUrl({code: '45gDs'})).be.rejectedWith(errors.UrlNotFoundError);
     sinon.assert.calledWith(urlRepository.getUrl, '45gDs');
   });
 });

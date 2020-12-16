@@ -18,6 +18,38 @@ describe('UrlRepository', () => {
     expect(count).to.equal(42);
     sinon.assert.called(updateFake);
   });
+  it('should create non-existing counter and increment counter on getNextCount', async () => {
+    const updateStub = sinon.stub();
+    const putFake = sinon.fake.resolves();
+    updateStub.onCall(0).rejects({code: 'ValidationException'});
+    updateStub.onCall(1).resolves({Attributes: {currentValue: 42}});
+    dynamoDBDocumentClient.update = () =>{
+      return {
+        promise: updateStub,
+      };
+    };
+    dynamoDBDocumentClient.put = () =>{
+      return {
+        promise: putFake,
+      };
+    };
+    const count = await urlRepository.getNextCount();
+    expect(count).to.equal(42);
+    sinon.assert.calledTwice(updateStub);
+    sinon.assert.called(putFake);
+  });
+
+  it('should create non-existing counter and increment counter on getNextCount', async () => {
+    const updateStub = sinon.stub();
+    updateStub.onCall(0).rejects(new Error('Some error'));
+    dynamoDBDocumentClient.update = () =>{
+      return {
+        promise: updateStub,
+      };
+    };
+    await expect(urlRepository.getNextCount()).to.be.rejectedWith(Error);
+    sinon.assert.calledOnce(updateStub);
+  });
   it('should save new url on createUrl ang get it value via the getUrl', async () => {
     const putFake = sinon.fake.resolves();
     dynamoDBDocumentClient.put = () =>{

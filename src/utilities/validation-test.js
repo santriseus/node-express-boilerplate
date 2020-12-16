@@ -23,11 +23,7 @@ describe('Validation', () => {
     const schemas = {output: Joi.object().required()};
     const func = sinon.fake.resolves(5);
     const wrapped = validate(func, schemas);
-    await wrapped(1).then(()=>{
-      throw new Error('Promise should be rejected.');
-    }).catch((err)=>{
-      expect(err.message).to.equal('"value" must be of type object');
-    });
+    return expect(wrapped(1)).be.rejectedWith('"value" must be of type object');
   });
   it('should throw error if unknown is not ignored', () => {
     const schemas = {input: [Joi.object({field: Joi.number()}).required()]};
