@@ -1,5 +1,6 @@
 const {serializeError} = require('serialize-error');
-module.exports = function newErrorMiddleware(errors, logger) {
+module.exports = function newErrorMiddleware({dependencies}) {
+  const {errors, logger} = dependencies;
   function wrapError(err, req) {
     if (err.status) {
       return err;

@@ -2,7 +2,7 @@ module.exports = function newDataHelper({dependencies, options}) {
   return {
     recreateUrlTable: async function(name) {
       try {
-        await dependencies.aws.dynamoDB.deleteTable({
+        await dependencies.dynamoDB.deleteTable({
           TableName: name,
         }).promise();
       } catch (err) {
@@ -10,7 +10,7 @@ module.exports = function newDataHelper({dependencies, options}) {
           throw err;
         }
       }
-      await dependencies.aws.dynamoDB.createTable({
+      await dependencies.dynamoDB.createTable({
         TableName: name,
         AttributeDefinitions: [
           {
@@ -29,7 +29,7 @@ module.exports = function newDataHelper({dependencies, options}) {
           WriteCapacityUnits: 1,
         },
       }).promise();
-      return dependencies.aws.dynamoDBDocumentClient.put({
+      return dependencies.dynamoDBDocumentClient.put({
         TableName: name,
         Item: {
           PK: '__id',
@@ -38,7 +38,7 @@ module.exports = function newDataHelper({dependencies, options}) {
       }).promise();
     },
     deleteCounter: async function(name) {
-      return dependencies.aws.dynamoDBDocumentClient.delete({
+      return dependencies.dynamoDBDocumentClient.delete({
         TableName: name,
         Key: {
           PK: '__id',
@@ -46,7 +46,7 @@ module.exports = function newDataHelper({dependencies, options}) {
       }).promise();
     },
     addUrl: async function(name, data) {
-      return dependencies.aws.dynamoDBDocumentClient.put({
+      return dependencies.dynamoDBDocumentClient.put({
         TableName: name,
         Item: {
           PK: data.code,

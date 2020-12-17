@@ -7,7 +7,7 @@ describe('Error Middleware', () => {
     const json = sinon.fake();
     const res = {status: sinon.fake.returns({json})};
     const req = {method: 'METHOD', path: '/path'};
-    const errorMiddleware = newErrorMiddleware(errors, logger);
+    const errorMiddleware = newErrorMiddleware({dependencies: {errors, logger}});
     const err = new Error('Some error.');
     errorMiddleware(err, req, res);
     const response = json.args[0][0];
@@ -21,7 +21,7 @@ describe('Error Middleware', () => {
     const json = sinon.fake();
     const res = {status: sinon.fake.returns({json})};
     const req = {method: 'METHOD', path: '/path'};
-    const errorMiddleware = newErrorMiddleware(errors, logger);
+    const errorMiddleware = newErrorMiddleware({dependencies: {errors, logger}});
     const err = new errors.InvalidDataError('Invalid data');
     errorMiddleware(err, req, res);
     const response = json.args[0][0];
@@ -34,7 +34,7 @@ describe('Error Middleware', () => {
     const json = sinon.fake();
     const res = {status: sinon.fake.returns({json})};
     const req = {method: 'METHOD', path: '/path'};
-    const errorMiddleware = newErrorMiddleware(errors, logger);
+    const errorMiddleware = newErrorMiddleware({dependencies: {errors, logger}});
     const err = {message: 'message', status: 400};
     errorMiddleware(err, req, res);
     const response = json.args[0][0];

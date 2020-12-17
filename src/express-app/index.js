@@ -1,16 +1,16 @@
 const express = require('express');
 const cors = require('cors');
-const mapRoutes = require('./routes');
-const newControllers = require('./controllers');
-const newMiddlewares = require('./middlewares');
+const newRoutes = require('./routes');
+const newUrlController = require('./controllers/url-controller');
+const newErrorMiddleware = require('./middlewares/error-middleware');
 module.exports = function newExpressApp({dependencies, options}) {
-  const {services, logger, errors} = dependencies;
-  const controllers = newControllers({dependencies: {services, logger}});
-  const middlewares = newMiddlewares({dependencies: {errors, logger}});
+  const {urlService, logger, errors} = dependencies;
+  const urlController = newUrlController({dependencies: {urlService}});
+  const errorMiddleware = newErrorMiddleware({dependencies: {errors, logger}});
   const app = express();
   app.use(express.json({limit: options.requestBodySizeLimit}));
   app.use(cors());
-  mapRoutes(app, controllers);
-  app.use(middlewares.errorMiddleware);
+  newRoutes({dependencies: {app, urlController}});
+  app.use(errorMiddleware);
   return app;
 };

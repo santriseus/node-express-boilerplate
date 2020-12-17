@@ -9,7 +9,7 @@ if (config.aws.useDummyCredentials) {
   });
 }
 const dependencies = require('../../src/dependencies')({options: config});
-const dataHelper = require('./data')({dependencies: {aws: dependencies.aws}});
+const dataHelper = require('./data')({dependencies});
 
 module.exports = {
   ...dependencies,

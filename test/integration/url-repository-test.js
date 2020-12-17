@@ -1,4 +1,4 @@
-const {dataHelper, config, repositories: {urlRepository}} = require('../test-utilities');
+const {dataHelper, config, urlRepository} = require('../test-utilities');
 
 describe('UrlRepository', () => {
   before(async () => {

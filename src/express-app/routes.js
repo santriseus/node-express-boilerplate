@@ -1,4 +1,5 @@
-module.exports = function mapRoutes(app, controllers) {
-  app.get('/url/:code', controllers.urlController.getLongUrl);
-  app.post('/url', controllers.urlController.createUrl);
+module.exports = function newRoutes({dependencies}) {
+  const {app, urlController} = dependencies;
+  app.get('/url/:code', urlController.getLongUrl);
+  app.post('/url', urlController.createUrl);
 };
