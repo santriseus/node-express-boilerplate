@@ -47,7 +47,7 @@ functions:
     events:
       - httpApi:
           method: "GET"
-          path: "/url/:code"
+          path: "/url/{code}"
 resources:
   Resources:
     CognitoUserPool:
