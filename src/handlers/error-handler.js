@@ -5,7 +5,7 @@ module.exports = function newErrorHandler({dependencies}) {
     if (err.status) {
       return err;
     } else {
-      return new errors.InternalServerError(`Internal server error occurred at ${event.http.method} ${event.http.path}`,
+      return new errors.InternalServerError(`Internal server error occurred at ${event.requestContext.http.method} ${event.requestContext.http.path}`,
           {innerError: err});
     }
   }
@@ -22,7 +22,7 @@ module.exports = function newErrorHandler({dependencies}) {
     const wrappedError = wrapError(err, event);
     const msg = {
       type: 'request',
-      data: {error: err, method: event.http.method, path: event.http.path},
+      data: {error: err, method: event.requestContext.http.method, path: event.requestContext.http.path},
     };
     if (err.status && err.status > 399 && err.status < 500) {
       logger.info(msg, 'Client error: ' + err.message);
