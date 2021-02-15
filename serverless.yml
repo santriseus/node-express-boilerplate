@@ -18,6 +18,7 @@ provider:
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_URL_TABLE}"
   httpApi:
+    payload: '2.0'
     authorizers:
       serviceAuthorizer:
         identitySource: $request.header.Authorization
