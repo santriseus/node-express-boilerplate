@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm-run-all lint unit-tests deps integration-tests api-tests",
-    "start": "npm-run-all deps run-local-server",
-    "run-local-server": "node src/server.js",
+    "test": "npm-run-all lint unit-tests deps integration-tests handlers-tests",
     "integration-tests": "cross-env NODE_ENV=test mocha test/integration/**/*-test.js",
-    "api-tests": "cross-env NODE_ENV=test mocha test/api/**/*-test.js",
+    "handlers-tests": "cross-env NODE_ENV=test mocha test/handlers/**/*-test.js",
     "unit-tests": "cross-env NODE_ENV=test nyc mocha --config=.mocharc.unit.js",
     "deps": "docker-compose up -d",
     "stop-deps": "docker-compose stop",

@@ -11,7 +11,7 @@ describe('Dependencies', () => {
         'urlRepository',
         'urlService',
         'dynamoDB',
-        'app',
+        'urlHandler',
     );
   });
 });
