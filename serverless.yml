@@ -17,15 +17,72 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_URL_TABLE}"
+  httpApi:
+    authorizers:
+      serviceAuthorizer:
+        identitySource: $request.header.Authorization
+        issuerUrl:
+          Fn::Join:
+            - ''
+            - - 'https://cognito-idp.'
+              - '${opt:region, self:provider.region}'
+              - '.amazonaws.com/'
+              - Ref: CognitoUserPool
+        audience:
+          - Ref: CognitoUserPoolClient
 functions:
-  api:
-    handler: src/lambda.handler
+  createUrl:
+    handler: src/handlers/handlers.createUrl
     memorySize: 256
     timeout: 3
     events:
-      - httpApi: '*'
+      - httpApi:
+          method: "POST"
+          path: "/url"
+          authorizer: serviceAuthorizer
+  getLongUrl:
+    handler: src/handlers/handlers.getLongUrl
+    memorySize: 256
+    timeout: 3
+    events:
+      - httpApi:
+          method: "GET"
+          path: "/url/:code"
 resources:
   Resources:
+    CognitoUserPool:
+      DeletionPolicy: Delete
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: service-user-pool-${opt:stage, self:provider.stage}
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+    CognitoUserPoolClient:
+      DeletionPolicy: Delete
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: service-user-pool-client-${opt:stage, self:provider.stage}
+        AllowedOAuthFlows:
+          - code
+          - implicit
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthScopes:
+          - email
+          - openid
+          - aws.cognito.signin.user.admin
+        UserPoolId:
+          Ref: CognitoUserPool
+        CallbackURLs:
+          - https://localhost:3000
+        ExplicitAuthFlows:
+          - ALLOW_USER_SRP_AUTH
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        GenerateSecret: false
+        SupportedIdentityProviders:
+          - COGNITO
     UrlsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Delete
